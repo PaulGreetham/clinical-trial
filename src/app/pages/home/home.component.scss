@@ -1,0 +1,154 @@
+.landing-container {
+  display: flex;
+  flex-direction: row;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 1rem;
+}
+
+.content-section {
+  flex: 1;
+  padding-right: 2rem;
+}
+
+.image-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #3f51b5;
+  font-weight: 500;
+}
+
+.description {
+  color: #5a6a7a;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cta-primary {
+  background-color: #3f51b5;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+}
+
+.cta-primary:hover {
+  background-color: #303f9f;
+}
+
+.cta-secondary {
+  background-color: transparent;
+  color: #3f51b5;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #3f51b5;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.cta-secondary:hover {
+  background-color: rgba(63, 81, 181, 0.1);
+}
+
+.features-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: 4rem auto;
+  max-width: 1200px;
+  padding: 0 1rem;
+}
+
+.feature {
+  flex: 1;
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.feature h3 {
+  color: #3f51b5;
+  margin-bottom: 1rem;
+}
+
+.feature p {
+  color: #5a6a7a;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .landing-container {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+  
+  .content-section {
+    padding-right: 0;
+    text-align: center;
+  }
+  
+  .cta-buttons {
+    justify-content: center;
+  }
+  
+  .features-section {
+    flex-direction: column;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+.placeholder-image {
+  width: 100%;
+  max-width: 500px;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e8eeff;
+  color: #3f51b5;
+  border-radius: 8px;
+  font-weight: bold;
+  border: 2px solid #3f51b5;
+  text-align: center;
+} 

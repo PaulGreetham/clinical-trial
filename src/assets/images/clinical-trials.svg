@@ -1,0 +1,8 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="400" fill="#f5f7ff" />
+  <circle cx="300" cy="200" r="150" fill="#e8eeff" stroke="#3f51b5" stroke-width="2" />
+  <rect x="200" y="150" width="200" height="20" fill="#3f51b5" rx="5" ry="5" />
+  <rect x="240" y="190" width="120" height="20" fill="#3f51b5" rx="5" ry="5" />
+  <rect x="220" y="230" width="160" height="20" fill="#3f51b5" rx="5" ry="5" />
+  <text x="300" y="120" font-family="Arial" font-size="24" fill="#3f51b5" text-anchor="middle">Clinical Trials</text>
+</svg> 
