@@ -1,6 +1,22 @@
-<div class="container">
-  <h1>{{ title }}</h1>
-  <p>Welcome to your new Angular application!</p>
-</div>
+<div class="app-container">
+  <header>
+    <div class="container">
+      <h1>{{ title }}</h1>
+      <nav>
+        <a routerLink="/home" routerLinkActive="active">Home</a>
+        <a routerLink="/trials" routerLinkActive="active">Trials</a>
+        <a routerLink="/favorites" routerLinkActive="active">Favorites</a>
+      </nav>
+    </div>
+  </header>
 
-<router-outlet></router-outlet>
+  <main class="container">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2024 Clinical Trial Application</p>
+    </div>
+  </footer>
+</div>
