@@ -1,27 +1,152 @@
+@import '../../styles/variables';
+
+:host {
+  display: block;
+  
+  // Component-specific variables
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --card-radius: 8px;
+  --card-selected-border: 3px solid #{$primary-color};
+}
+
 .favorites-container {
-  padding: 1rem;
-}
-
-.favorites-placeholder {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 2rem;
-  margin: 1rem 0;
-  text-align: center;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.nav-link {
-  color: #3f51b5;
-  text-decoration: none;
-}
-
-.nav-link:hover {
-  text-decoration: underline;
+  padding: 1.5rem;
+  
+  h2 {
+    color: $primary-dark;
+    margin-bottom: 0.25rem;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+    
+    button {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      
+      &.btn-remove-favorites {
+        background-color: #e74c3c;
+        color: white;
+        
+        &:hover:not(:disabled) {
+          background-color: darken(#e74c3c, 8%);
+        }
+      }
+    }
+  }
+  
+  .favorites-list {
+    .trial-item {
+      background-color: white;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 1.25rem;
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        box-shadow: var(--card-hover-shadow);
+        transform: translateY(-2px);
+      }
+      
+      &.selected {
+        border-left: var(--card-selected-border);
+      }
+      
+      .trial-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        
+        .selection {
+          margin-right: 0.75rem;
+        }
+        
+        h3 {
+          flex: 1;
+          margin: 0;
+          color: $primary-dark;
+        }
+        
+        .actions {
+          button {
+            background-color: transparent;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            
+            &:hover {
+              background-color: rgba(231, 76, 60, 0.1);
+            }
+          }
+        }
+      }
+      
+      .trial-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        background-color: $light-gray;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        
+        .info-item {
+          flex: 1 1 45%;
+          min-width: 180px;
+          
+          strong {
+            color: $primary-dark;
+          }
+        }
+      }
+      
+      .description {
+        margin: 0.5rem 0 0;
+        line-height: 1.5;
+        color: $text-color;
+      }
+    }
+  }
+  
+  .favorites-placeholder {
+    background-color: $light-gray;
+    border-radius: 8px;
+    padding: 2.5rem;
+    text-align: center;
+    color: darken($medium-gray, 15%);
+    font-style: italic;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    
+    .nav-link {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 500;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 } 

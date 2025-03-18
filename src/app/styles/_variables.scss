@@ -1,0 +1,12 @@
+// Import the Sass color module
+@use "sass:color";
+
+// Colors
+$primary-color: #00a78e;
+$primary-light: color.scale($primary-color, $lightness: 66.9%);
+$primary-dark: color.scale($primary-color, $lightness: -30.5%);
+$accent-color: #2c7fb8;
+$text-color: #333;
+$light-gray: #f5f5f5;
+$medium-gray: #e0e0e0;
+$border-color: #ddd; 

@@ -6,10 +6,9 @@
 }
 
 header {
-  background-color: #3f51b5;
-  color: white;
+  background-color: var(--primary);
+  color: var(--text-light);
   padding: 1rem 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
   .container {
     display: flex;
@@ -20,6 +19,7 @@ header {
   h1 {
     margin: 0;
     font-size: 1.5rem;
+    color: white;
   }
 
   nav {

@@ -2,9 +2,58 @@
   <h2>Favorite Clinical Trials</h2>
   <p>View your saved clinical trials</p>
 
-  <!-- Placeholder for favorites list -->
-  <div class="favorites-placeholder">
-    <p>Your favorite trials will appear here</p>
+  <div class="controls" *ngIf="favorites.length > 0">
+    <button 
+      (click)="removeSelectedFromFavorites()" 
+      [disabled]="selectedTrials.size === 0"
+      class="btn-remove-favorites">
+      Remove Selected ({{ selectedTrials.size }})
+    </button>
+  </div>
+
+  <!-- Favorites list -->
+  <div class="favorites-list" *ngIf="favorites.length > 0">
+    <div class="trial-item" *ngFor="let trial of favorites" [class.selected]="isSelected(trial.id)">
+      <div class="trial-header">
+        <div class="selection">
+          <input 
+            type="checkbox" 
+            [checked]="isSelected(trial.id)" 
+            (change)="toggleSelection(trial.id)"
+          >
+        </div>
+        
+        <h3>{{ trial.name }}</h3>
+        
+        <div class="actions">
+          <button (click)="removeFromFavorites(trial.id)" class="btn-remove">
+            Remove
+          </button>
+        </div>
+      </div>
+      
+      <div class="trial-info">
+        <div class="info-item">
+          <strong>ID:</strong> {{ trial.id }}
+        </div>
+        <div class="info-item">
+          <strong>Phase:</strong> {{ trial.phase }}
+        </div>
+        <div class="info-item">
+          <strong>Status:</strong> {{ trial.status }}
+        </div>
+        <div class="info-item" *ngIf="trial.startDate">
+          <strong>Start Date:</strong> {{ trial.startDate }}
+        </div>
+      </div>
+      
+      <p class="description">{{ trial.description | slice:0:300 }}{{ trial.description.length > 300 ? '...' : '' }}</p>
+    </div>
+  </div>
+  
+  <!-- Empty state -->
+  <div class="favorites-placeholder" *ngIf="favorites.length === 0">
+    <p>You haven't added any favorites yet</p>
   </div>
 
   <div class="nav-links">

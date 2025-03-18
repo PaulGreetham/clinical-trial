@@ -1,10 +1,76 @@
 <div class="trial-list-container">
   <h2>Clinical Trials List</h2>
-  <p>Browse all available clinical trials</p>
+  <p>Browse available clinical trials</p>
 
-  <!-- Placeholder for actual trial list -->
-  <div class="trials-placeholder">
-    <p>Trial list will be displayed here</p>
+  <div class="controls">
+    <button (click)="loadTrials()" [disabled]="loading" class="btn-refresh">
+      Refresh Trials
+    </button>
+    <button (click)="toggleTimer()" class="btn-timer" [class.active]="timerActive">
+      {{ timerActive ? 'Stop Auto-Refresh' : 'Start Auto-Refresh (5s)' }}
+    </button>
+    <button 
+      (click)="addSelectedToFavorites()" 
+      [disabled]="selectedTrials.size === 0"
+      class="btn-add-favorites">
+      Add Selected to Favorites ({{ selectedTrials.size }})
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading trials...</p>
+  </div>
+  
+  <!-- Error state -->
+  <div class="error" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- Data display -->
+  <div class="trials-list" *ngIf="!loading && !error && trials.length > 0">
+    <div class="trial-item" *ngFor="let trial of trials" [class.selected]="isSelected(trial.id)" [class.new-trial]="trial.isNew">
+      <div class="trial-header">
+        <div class="selection">
+          <input 
+            type="checkbox" 
+            [checked]="isSelected(trial.id)" 
+            (change)="toggleSelection(trial.id)"
+          >
+        </div>
+        
+        <h3>{{ trial.name }}</h3>
+        
+        <div class="actions">
+          <button (click)="addToFavorites(trial)" class="btn-favorite">
+            Add to Favorites
+          </button>
+        </div>
+      </div>
+      
+      <div class="trial-info">
+        <div class="info-item">
+          <strong>ID:</strong> {{ trial.id }}
+        </div>
+        <div class="info-item">
+          <strong>Phase:</strong> {{ trial.phase }}
+        </div>
+        <div class="info-item">
+          <strong>Status:</strong> {{ trial.status }}
+        </div>
+        <div class="info-item" *ngIf="trial.startDate">
+          <strong>Start Date:</strong> {{ trial.startDate }}
+        </div>
+      </div>
+      
+      <p class="description">{{ trial.description | slice:0:300 }}{{ trial.description.length > 300 ? '...' : '' }}</p>
+    </div>
+  </div>
+  
+  <!-- Empty state -->
+  <div class="trials-placeholder" *ngIf="!loading && !error && trials.length === 0">
+    <p>No trials found</p>
   </div>
 
   <div class="nav-links">

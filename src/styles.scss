@@ -1,7 +1,72 @@
 /* You can add global styles to this file, and also import other style files */
+
+// Import modules
+@use "sass:color";
+@use 'app/styles/variables' as vars;
+
+// Import Google Fonts if needed
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+
+// Define font variables
+$font-family-primary: 'Roboto', sans-serif;
+$font-family-secondary: 'Open Sans', sans-serif;
+$font-weight-bold: 600;
+$text-primary: vars.$primary-dark;
+
+// Define CSS variables
+:root {
+  --primary: #{vars.$primary-color};
+  --primary-light: #{vars.$primary-light};
+  --primary-dark: #{vars.$primary-dark};
+  --text-light: #ffffff;
+  --text-dark: #{vars.$text-color};
+  --background-light: #{vars.$light-gray};
+  --border-color: #{vars.$border-color};
+}
+
+// Reset default margin and padding
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: $font-family-primary;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+}
+
+// Override the global h1 style for elements inside header
+header h1 {
+  color: var(--text-light) !important;
+}
+
+// Global heading styles
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-secondary;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+}
+
+// Any other global styles using your variables
+
+// SweetAlert2 custom styling
+.swal2-popup {
+  font-family: $font-family-primary;
+  border-radius: 8px;
+}
+
+.swal2-title {
+  color: vars.$primary-dark;
+}
+
+.swal2-html-container {
+  color: vars.$text-color;
+}
+
+.swal2-confirm {
+  background-color: vars.$primary-color !important;
+}
+
+.swal2-timer-progress-bar {
+  background-color: rgba(0, 167, 142, 0.5) !important;
 }

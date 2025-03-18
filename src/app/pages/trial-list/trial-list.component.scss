@@ -1,10 +1,275 @@
+@use "sass:color";
+@use "../../styles/variables" as vars;
+
+:host {
+  display: block; // Component container display type
+  
+  // Component-specific variables
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --card-radius: 8px;
+  --card-selected-border: 3px solid #{vars.$primary-color};
+  
+  .trial-item {
+    background-color: white;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-2px);
+    }
+    
+    &.selected {
+      border-left: var(--card-selected-border);
+    }
+    
+    // Animation for new trials
+    &.new-trial {
+      animation: highlight-new-trial 3s ease;
+    }
+    
+    .trial-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      
+      .selection {
+        margin-right: 0.75rem;
+      }
+      
+      h3 {
+        flex: 1;
+        margin: 0;
+        color: vars.$primary-dark;
+      }
+      
+      .actions {
+        button {
+          background-color: transparent;
+          border: 1px solid vars.$primary-color;
+          color: vars.$primary-color;
+          padding: 0.4rem 0.75rem;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s;
+          
+          &:hover {
+            background-color: vars.$primary-color;
+            color: white;
+            border-color: vars.$primary-color;
+          }
+          
+          &.btn-remove {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            
+            &:hover {
+              background-color: rgba(231, 76, 60, 0.1);
+            }
+          }
+        }
+      }
+    }
+    
+    .trial-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background-color: vars.$light-gray;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      
+      .info-item {
+        flex: 1 1 45%;
+        min-width: 180px;
+        
+        strong {
+          color: vars.$primary-dark;
+        }
+      }
+    }
+    
+    .description {
+      margin: 0.5rem 0 0;
+      line-height: 1.5;
+      color: vars.$text-color;
+    }
+  }
+}
+
 .trial-list-container {
-  padding: 1rem;
+  padding: 1.5rem;
+  
+  h2 {
+    color: vars.$primary-dark;
+    margin-bottom: 0.25rem;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+    
+    button {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      
+      &.btn-refresh {
+        background-color: vars.$accent-color;
+        color: white;
+        
+        &:hover:not(:disabled) {
+          background-color: color.scale(vars.$accent-color, $lightness: -17.9%);
+        }
+      }
+      
+      &.btn-timer {
+        background-color: vars.$medium-gray;
+        color: vars.$text-color;
+        
+        &:hover:not(:disabled) {
+          background-color: color.scale(vars.$medium-gray, $lightness: -9.1%);
+        }
+        
+        &.active {
+          background-color: vars.$primary-color;
+          color: white;
+        }
+      }
+      
+      &.btn-add-favorites {
+        background-color: rgba(0, 167, 142, 0.2);
+        color: vars.$primary-color;
+        border: 1px solid vars.$primary-color;
+        padding: 0.6rem 1rem;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background-color: vars.$primary-color;
+          color: white;
+          box-shadow: 0 3px 8px rgba(0, 167, 142, 0.3);
+        }
+        
+        &:active {
+          transform: translateY(1px);
+        }
+      }
+    }
+  }
+  
+  .trial-item {
+    background-color: white;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-2px);
+    }
+    
+    &.selected {
+      border-left: var(--card-selected-border);
+    }
+    
+    // Animation for new trials
+    &.new-trial {
+      animation: highlight-new-trial 3s ease;
+    }
+    
+    .trial-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      
+      .selection {
+        margin-right: 0.75rem;
+      }
+      
+      h3 {
+        flex: 1;
+        margin: 0;
+        color: vars.$primary-dark;
+      }
+      
+      .actions {
+        button {
+          background-color: transparent;
+          border: 1px solid vars.$primary-color;
+          color: vars.$primary-color;
+          padding: 0.4rem 0.75rem;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s;
+          
+          &:hover {
+            background-color: vars.$primary-color;
+            color: white;
+            border-color: vars.$primary-color;
+          }
+          
+          &.btn-remove {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            
+            &:hover {
+              background-color: rgba(231, 76, 60, 0.1);
+            }
+          }
+        }
+      }
+    }
+    
+    .trial-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background-color: vars.$light-gray;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      
+      .info-item {
+        flex: 1 1 45%;
+        min-width: 180px;
+        
+        strong {
+          color: vars.$primary-dark;
+        }
+      }
+    }
+    
+    .description {
+      margin: 0.5rem 0 0;
+      line-height: 1.5;
+      color: vars.$text-color;
+    }
+  }
 }
 
 .trials-placeholder {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
+  background-color: vars.$light-gray;
+  border: 1px solid vars.$border-color;
   border-radius: 4px;
   padding: 2rem;
   margin: 1rem 0;
@@ -14,14 +279,37 @@
 .nav-links {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  
+  .nav-link {
+    color: vars.$primary-color;
+    text-decoration: none;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.nav-link {
-  color: #3f51b5;
-  text-decoration: none;
+// New animation keyframes
+@keyframes highlight-new-trial {
+  0% {
+    transform: translateX(-10px);
+    background-color: rgba(0, 167, 142, 0.15);
+    box-shadow: 0 0 20px rgba(0, 167, 142, 0.5);
+  }
+  10% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  30% {
+    transform: translateX(0);
+  }
+  100% {
+    background-color: white;
+    box-shadow: var(--card-shadow);
+  }
 }
-
-.nav-link:hover {
-  text-decoration: underline;
-} 
