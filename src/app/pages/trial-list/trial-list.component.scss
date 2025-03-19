@@ -29,7 +29,11 @@
     
     // Animation for new trials
     &.new-trial {
-      animation: highlight-new-trial 3s ease;
+      animation: highlight-new-trial 3s ease-in-out;
+      border-left: 5px solid vars.$primary-color;
+      box-shadow: 0 0 15px rgba(0, 167, 142, 0.3);
+      position: relative;
+      z-index: 10;
     }
     
     .trial-header {
@@ -194,7 +198,11 @@
     
     // Animation for new trials
     &.new-trial {
-      animation: highlight-new-trial 3s ease;
+      animation: highlight-new-trial 3s ease-in-out;
+      border-left: 5px solid vars.$primary-color;
+      box-shadow: 0 0 15px rgba(0, 167, 142, 0.3);
+      position: relative;
+      z-index: 10;
     }
     
     .trial-header {
@@ -292,21 +300,25 @@
   }
 }
 
-// New animation keyframes
+// More visible animation with vertical drop and color change
 @keyframes highlight-new-trial {
   0% {
-    transform: translateX(-10px);
-    background-color: rgba(0, 167, 142, 0.15);
-    box-shadow: 0 0 20px rgba(0, 167, 142, 0.5);
+    transform: translateY(-30px);
+    background-color: rgba(0, 167, 142, 0.3);
+    box-shadow: 0 0 25px rgba(0, 167, 142, 0.7);
   }
-  10% {
-    transform: translateX(0);
-  }
-  20% {
-    transform: translateX(-5px);
+  15% {
+    transform: translateY(0);
   }
   30% {
-    transform: translateX(0);
+    transform: translateY(-10px);
+  }
+  45% {
+    transform: translateY(0);
+    background-color: rgba(0, 167, 142, 0.2);
+  }
+  60% {
+    background-color: rgba(0, 167, 142, 0.1);
   }
   100% {
     background-color: white;
