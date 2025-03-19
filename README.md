@@ -24,5 +24,6 @@ A modern web application built with Angular that helps researchers and healthcar
 - **UI Components**: Custom components with SCSS
 - **Notifications**: SweetAlert2
 - **Testing**: Jasmine & Karma
+- **Liniting**: ESLint
 - **API Integration**: ClinicalTrials.gov REST API
 - **Build Tools**: Angular CLI
