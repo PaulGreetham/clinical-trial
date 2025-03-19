@@ -6,7 +6,6 @@ export interface Trial {
   status: string;
   startDate: string;
   detailedDescription?: string;
-  selected?: boolean; // For multi-selection functionality
-  isNew?: boolean; // Add this for animation handling
-  // Add other properties as needed
+  selected?: boolean;
+  isNew?: boolean;
 } 

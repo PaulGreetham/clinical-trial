@@ -15,16 +15,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'clinical-trial' title`, () => {
+  it(`should have the 'Clinical Trials Management' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('clinical-trial');
+    expect(app.title).toEqual('Clinical Trials Management');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('clinical-trial');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Clinical Trials Management');
   });
 });

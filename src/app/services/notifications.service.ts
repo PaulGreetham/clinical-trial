@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
-import { Trial } from '../models/trial.model';
+import { Trial } from '../types/trial.types';
 
 @Injectable({
   providedIn: 'root'

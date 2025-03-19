@@ -10,5 +10,5 @@ import { NavbarComponent } from './components/navbar/navbar.component';
   standalone: true
 })
 export class AppComponent {
-  title = 'clinical-trial';
+  title = 'Clinical Trials Management';
 }

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, shareReplay, switchMap, take, retry } from 'rxjs/operators';
-import { Trial } from '../models/trial.model';
+import { Trial } from '../types/trial.types';
 import { environment } from '../../environments/environment';
 import { NotificationsService } from './notifications.service';
 import { ClinicalTrialsApiResponse } from '../types/api-responses.types';
@@ -125,14 +125,14 @@ export class ApiService {
     return this.favorites$.pipe(
       take(1),
       switchMap(currentFavorites => {
-        const trial = currentFavorites.find(t => t.id === trialId);
-        const updatedFavorites = currentFavorites.filter(t => t.id !== trialId);
+        const trialToRemove = currentFavorites.find(trial => trial.id === trialId);
+        const updatedFavorites = currentFavorites.filter(trial => trial.id !== trialId);
         
         this.favoritesSubject.next(updatedFavorites);
         this.saveFavoritesToStorage();
         
-        if (trial) {
-          this.notificationsService.showRemovedFromFavorites(trial.name);
+        if (trialToRemove) {
+          this.notificationsService.showRemovedFromFavorites(trialToRemove.name);
         }
         
         return of(undefined);
