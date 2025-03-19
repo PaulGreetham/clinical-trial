@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
 import { Trial } from '../../models/trial.model';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, interval, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 
@@ -24,6 +24,10 @@ export class TrialListComponent implements OnInit, OnDestroy {
   
   // Selection for multi-favorite functionality
   selectedTrials: Set<string> = new Set();
+  
+  // Add these properties to the class
+  private usedTrialIds: Set<string> = new Set(); // Track all trials we've already shown
+  private maxRetries = 3;
   
   constructor(private apiService: ApiService) {}
   
@@ -94,82 +98,108 @@ export class TrialListComponent implements OnInit, OnDestroy {
   }
   
   fetchNewTrial(): void {
-    console.log('Fetching new trial...');
-    
-    // When in mock mode, create a unique trial on each refresh
-    if (environment.useTestData) {
-      // Mock implementation remains the same, but add console logs
-      console.log('Using mock data for new trial');
-      
-      const mockStatuses = ['RECRUITING', 'ACTIVE_NOT_RECRUITING', 'COMPLETED', 'ENROLLING_BY_INVITATION', 'NOT_YET_RECRUITING'];
-      const mockPhases = ['Phase 1', 'Phase 2', 'Phase 3', 'Phase 4', 'Not Applicable'];
-      
-      // Use current timestamp to ensure unique naming/data
-      const now = new Date();
-      const timeString = now.toLocaleTimeString(); // HH:MM:SS format
-      
-      const randomTrial: Trial = {
-        id: 'NCT' + Math.floor(10000000 + Math.random() * 90000000),
-        name: `Auto-Generated Trial (${timeString})`,
-        description: `This is an automatically generated trial created by the auto-refresh timer at ${timeString}.`,
-        phase: mockPhases[Math.floor(Math.random() * mockPhases.length)],
-        status: mockStatuses[Math.floor(Math.random() * mockStatuses.length)],
-        startDate: now.toISOString().slice(0, 10),
-        detailedDescription: `Additional details for this auto-generated clinical trial. Created at: ${now.toISOString()}`
-      };
-      
-      console.log('Created new mock trial:', randomTrial.id);
-      
-      // Add the new trial to the beginning of the array and flag it as new for animation
-      const newTrials = [{ ...randomTrial, isNew: true }, ...this.trials.map(t => ({ ...t, isNew: false }))];
-      
-      // If we have more than 10 trials, remove the oldest one
-      this.trials = newTrials.length > 10 ? newTrials.slice(0, 10) : newTrials;
-      
-      // Remove the 'isNew' flag after animation completes
-      setTimeout(() => {
-        this.trials = this.trials.map(t => ({ ...t, isNew: false }));
-      }, 3000);
-      
+    console.log('Fetching new trial from API...');
+    this.fetchTrialWithRetry(0);
+  }
+  
+  private fetchTrialWithRetry(retryCount: number): void {
+    // Bail out if we've retried too many times
+    if (retryCount >= this.maxRetries) {
+      console.error(`Max retry attempts (${this.maxRetries}) reached`);
+      this.error = 'Failed to fetch a unique trial after multiple attempts.';
+      this.loading = false;
       return;
     }
     
-    // API mode - real data
-    console.log('Fetching trial from API...');
-    this.apiService.getRandomTrials(1).subscribe({
+    // Just use our simple method
+    this.apiService.getRandomSingleTrial().subscribe({
       next: (data) => {
-        console.log('API returned data:', data);
-        
         if (data.length > 0) {
-          // Check for duplicates
-          const newTrial = data[0];
-          const isDuplicate = this.trials.some(trial => trial.id === newTrial.id);
-          
-          if (!isDuplicate) {
-            console.log('New unique trial found:', newTrial.id);
-            // Add the new trial to the beginning of the array with animation flag
-            const newTrials = [{ ...newTrial, isNew: true }, ...this.trials.map(t => ({ ...t, isNew: false }))];
-            
-            // If we have more than 10 trials, remove the oldest one
-            this.trials = newTrials.length > 10 ? newTrials.slice(0, 10) : newTrials;
-            
-            // Remove the 'isNew' flag after animation completes
-            setTimeout(() => {
-              this.trials = this.trials.map(t => ({ ...t, isNew: false }));
-            }, 3000);
+          // Check if we've already seen this trial
+          if (!this.usedTrialIds.has(data[0].id)) {
+            this.processNewTrial(data[0]);
           } else {
-            console.log('Duplicate trial found, trying again');
-            // Try again if duplicate
-            this.fetchNewTrial();
+            console.log(`Trial ${data[0].id} already exists, trying again...`);
+            setTimeout(() => this.fetchTrialWithRetry(retryCount + 1), 300);
           }
         } else {
           console.warn('API returned empty data');
+          setTimeout(() => this.fetchTrialWithRetry(retryCount + 1), 300);
         }
       },
-      error: (err) => {
-        console.error('Error fetching new trial:', err);
-      }
+      error: (err) => this.handleApiError(err)
     });
+  }
+  
+  private processNewTrial(newTrial: Trial, allowDuplicate: boolean = false): void {
+    if (!allowDuplicate) {
+      // Add this ID to our used trials set
+      this.usedTrialIds.add(newTrial.id);
+    }
+    
+    console.log('New trial from API:', newTrial.id);
+    
+    // Mark all existing trials as not new
+    const existingTrials = this.trials.map(t => ({ ...t, isNew: false }));
+    
+    // Add the new trial at the top
+    const newTrialsArray = [
+      { ...newTrial, isNew: true },
+      ...existingTrials
+    ];
+    
+    // If we have more than 10 trials, remove the oldest one (at the bottom)
+    if (newTrialsArray.length > 10) {
+      const removedTrial = newTrialsArray[newTrialsArray.length - 1];
+      console.log(`Removing oldest trial: ID: ${removedTrial.id}`);
+      newTrialsArray.pop();
+    }
+    
+    this.trials = newTrialsArray;
+    
+    // Remove the 'isNew' flag after animation completes
+    setTimeout(() => {
+      this.trials = this.trials.map(t => ({ ...t, isNew: false }));
+    }, 3000);
+  }
+  
+  private handleApiError(err: any): void {
+    console.error('Error fetching trial from API:', err);
+    // If we hit an error, try with a different method rather than showing error to user
+    const fallbackSearchType = Math.floor(Math.random() * 2); // Only use methods 0 or 1
+    
+    if (fallbackSearchType === 0) {
+      this.apiService.getTrialsByCondition(["cancer", "diabetes", "alzheimer", "covid"][Math.floor(Math.random() * 4)])
+        .subscribe({
+          next: (data) => this.processRandomTrial(data),
+          error: (errFallback) => {
+            // Now show error as both attempts failed
+            this.error = `API Error: ${err.message || 'Unknown error'}`;
+          }
+        });
+    } else {
+      this.apiService.getRandomTrials(10).subscribe({
+        next: (data) => this.processRandomTrial(data),
+        error: (errFallback) => {
+          this.error = `API Error: ${err.message || 'Unknown error'}`;
+        }
+      });
+    }
+  }
+  
+  // Helper method to process a random trial from a batch
+  private processRandomTrial(data: Trial[]): void {
+    if (data.length > 0) {
+      const uniqueTrials = data.filter(trial => !this.usedTrialIds.has(trial.id));
+      if (uniqueTrials.length > 0) {
+        const randomIndex = Math.floor(Math.random() * uniqueTrials.length);
+        this.processNewTrial(uniqueTrials[randomIndex]);
+      } else if (data.length > 0) {
+        // If no unique trials, just pick one from all results
+        const randomIndex = Math.floor(Math.random() * data.length);
+        this.processNewTrial(data[randomIndex], true);
+      }
+    }
   }
   
   // Toggle selection of a trial for multi-favorite functionality

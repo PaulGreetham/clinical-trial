@@ -34,6 +34,11 @@ export class ApiService {
       .set('filter.overallStatus', ['RECRUITING', 'ACTIVE_NOT_RECRUITING'].join(','));
       
     console.log('Making direct request to ClinicalTrials.gov API:', directApiUrl);
+    console.log('With parameters:', params.toString());
+      
+    // Build the full URL for logging purposes
+    const fullUrl = `${directApiUrl}?${params.toString()}`;
+    console.log('Full request URL:', fullUrl);
       
     return this.http.get(directApiUrl, { 
       params,
@@ -203,6 +208,188 @@ export class ApiService {
         startDate: ''
       };
     }
+  }
+  
+  // Get random trials with offset for better randomization
+  getRandomTrialWithOffset(count: number = 1, offset: number = 0): Observable<Trial[]> {
+    const directApiUrl = 'https://clinicaltrials.gov/api/v2/studies';
+    
+    // Set up the API parameters with offset
+    const params = new HttpParams()
+      .set('format', 'json')
+      .set('pageSize', count.toString())
+      .set('offset', offset.toString())
+      .set('countTotal', 'false')
+      .set('fields', 'NCTId,BriefTitle,BriefSummary,DetailedDescription,Phase,OverallStatus,StartDate')
+      .set('filter.overallStatus', ['RECRUITING', 'ACTIVE_NOT_RECRUITING'].join(','));
+      
+    console.log('Making direct request with offset:', offset);
+      
+    return this.http.get(directApiUrl, { 
+      params,
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).pipe(
+      map((response: any) => {
+        if (response && response.studies && Array.isArray(response.studies)) {
+          return this.mapStudiesToTrials(response.studies);
+        } else {
+          console.error('Unexpected API response structure:', response);
+          throw new Error('Invalid API response format');
+        }
+      })
+    );
+  }
+  
+  // Get random trials with a timestamp to avoid caching
+  getRandomTrialsWithTimestamp(count: number = 10, randomValue: number = 0): Observable<Trial[]> {
+    const directApiUrl = 'https://clinicaltrials.gov/api/v2/studies';
+    
+    // Set up the API parameters with a timestamp to avoid caching
+    const params = new HttpParams()
+      .set('format', 'json')
+      .set('pageSize', count.toString())
+      .set('countTotal', 'false')
+      .set('fields', 'NCTId,BriefTitle,BriefSummary,DetailedDescription,Phase,OverallStatus,StartDate')
+      .set('filter.overallStatus', ['RECRUITING', 'ACTIVE_NOT_RECRUITING'].join(','))
+      // Add timestamp and random parameter to avoid identical responses
+      .set('_', Date.now().toString())
+      .set('rand', randomValue.toString());
+      
+    console.log('Making timestamped request to ClinicalTrials.gov API');
+      
+    return this.http.get(directApiUrl, { 
+      params,
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    }).pipe(
+      map((response: any) => {
+        if (response && response.studies && Array.isArray(response.studies)) {
+          return this.mapStudiesToTrials(response.studies);
+        } else {
+          console.error('Unexpected API response structure:', response);
+          throw new Error('Invalid API response format');
+        }
+      })
+    );
+  }
+  
+  // Get trials by condition
+  getTrialsByCondition(condition: string): Observable<Trial[]> {
+    const directApiUrl = 'https://clinicaltrials.gov/api/v2/studies';
+    
+    // Set up parameters with condition
+    const params = new HttpParams()
+      .set('format', 'json')
+      .set('pageSize', '10')
+      .set('countTotal', 'false')
+      .set('fields', 'NCTId,BriefTitle,BriefSummary,DetailedDescription,Phase,OverallStatus,StartDate')
+      .set('query.term', condition);
+      
+    console.log(`Making request with condition: ${condition}`);
+      
+    return this.http.get(directApiUrl, { 
+      params,
+      headers: { 'Accept': 'application/json' }
+    }).pipe(
+      map((response: any) => {
+        if (response && response.studies && Array.isArray(response.studies)) {
+          return this.mapStudiesToTrials(response.studies);
+        } else {
+          throw new Error('Invalid API response format');
+        }
+      })
+    );
+  }
+  
+  // Get trials by status
+  getTrialsByStatus(statuses: string[]): Observable<Trial[]> {
+    const directApiUrl = 'https://clinicaltrials.gov/api/v2/studies';
+    
+    // Set up parameters with status filter
+    const params = new HttpParams()
+      .set('format', 'json')
+      .set('pageSize', '10')
+      .set('countTotal', 'false')
+      .set('fields', 'NCTId,BriefTitle,BriefSummary,DetailedDescription,Phase,OverallStatus,StartDate')
+      .set('filter.overallStatus', statuses.join(','));
+      
+    console.log(`Making request with statuses: ${statuses.join(',')}`);
+      
+    return this.http.get(directApiUrl, { params }).pipe(
+      map((response: any) => {
+        if (response && response.studies && Array.isArray(response.studies)) {
+          return this.mapStudiesToTrials(response.studies);
+        } else {
+          throw new Error('Invalid API response format');
+        }
+      })
+    );
+  }
+  
+  // Get trials by phase
+  getTrialsByPhase(phase: string): Observable<Trial[]> {
+    const directApiUrl = 'https://clinicaltrials.gov/api/v2/studies';
+    
+    // Set up parameters with phase filter
+    // The ClinicalTrials.gov API doesn't accept spaces in phase names
+    const params = new HttpParams()
+      .set('format', 'json')
+      .set('pageSize', '10')
+      .set('countTotal', 'false')
+      .set('fields', 'NCTId,BriefTitle,BriefSummary,DetailedDescription,Phase,OverallStatus,StartDate')
+      .set('filter.phase', phase);
+      
+    console.log(`Making request with phase: ${phase}`);
+      
+    return this.http.get(directApiUrl, { 
+      params,
+      headers: { 'Accept': 'application/json' }
+    }).pipe(
+      map((response: any) => {
+        if (response && response.studies && Array.isArray(response.studies)) {
+          return this.mapStudiesToTrials(response.studies);
+        } else {
+          console.error('Unexpected API response structure:', response);
+          throw new Error('Invalid API response format');
+        }
+      })
+    );
+  }
+  
+  // Update this method to be our main method for getting a single random trial
+  getRandomSingleTrial(): Observable<Trial[]> {
+    // Use the proxy path instead of direct API calls to avoid CORS issues
+    const apiUrl = `${this.baseUrl}/studies`;
+    
+    // Simple params that reliably work
+    const params = new HttpParams()
+      .set('format', 'json')
+      .set('pageSize', '1') // Just get one trial
+      .set('countTotal', 'false')
+      .set('fields', 'NCTId,BriefTitle,BriefSummary,DetailedDescription,Phase,OverallStatus,StartDate')
+      // Random offset to get different trials
+      .set('offset', Math.floor(Math.random() * 1000).toString())
+      // Add timestamp to avoid caching
+      .set('_', Date.now().toString());
+      
+    console.log('Making simple request for a single trial');
+      
+    return this.http.get(apiUrl, { params }).pipe(
+      map((response: any) => {
+        if (response && response.studies && Array.isArray(response.studies)) {
+          return this.mapStudiesToTrials(response.studies);
+        } else {
+          console.error('Unexpected API response structure:', response);
+          throw new Error('Invalid API response format');
+        }
+      })
+    );
   }
   
   constructor() {
