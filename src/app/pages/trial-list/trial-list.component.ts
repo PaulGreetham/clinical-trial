@@ -106,13 +106,13 @@ export class TrialListComponent implements OnInit, OnDestroy {
   private processNewTrial(newTrial: Trial, allowDuplicate: boolean = true): void {
     const existingTrials = this.trials.map(t => ({ ...t, isNew: false }));
     
-    const newTrialsArray = [
+    let newTrialsArray = [
       { ...newTrial, isNew: true },
       ...existingTrials
     ];
     
     if (newTrialsArray.length > 10) {
-      newTrialsArray.pop();
+      newTrialsArray = newTrialsArray.slice(0, 10);
     }
     
     this.trials = newTrialsArray;
