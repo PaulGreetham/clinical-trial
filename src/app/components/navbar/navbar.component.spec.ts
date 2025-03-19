@@ -1,15 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NavbarComponent } from './navbar.component';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { RouterLinkWithHref } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NavbarComponent } from './navbar.component';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  let router: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -18,7 +15,6 @@ describe('NavbarComponent', () => {
 
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
@@ -47,11 +43,11 @@ describe('NavbarComponent', () => {
 
   it('should have correct routerLinks for navigation items', () => {
     const navLinks = fixture.debugElement.queryAll(By.css('nav a'));
-    
+
     const homeLink = navLinks[0].injector.get(RouterLinkWithHref);
     const trialsLink = navLinks[1].injector.get(RouterLinkWithHref);
     const favoritesLink = navLinks[2].injector.get(RouterLinkWithHref);
-    
+
     expect(homeLink.href).toBe('/home');
     expect(trialsLink.href).toBe('/trials');
     expect(favoritesLink.href).toBe('/favorites');
@@ -59,7 +55,7 @@ describe('NavbarComponent', () => {
 
   it('should have correct text content for navigation links', () => {
     const navLinks = fixture.debugElement.queryAll(By.css('nav a'));
-    
+
     expect(navLinks[0].nativeElement.textContent).toBe('Home');
     expect(navLinks[1].nativeElement.textContent).toBe('Trials');
     expect(navLinks[2].nativeElement.textContent).toBe('Favorites');

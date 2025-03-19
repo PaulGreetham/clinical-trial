@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import { Trial } from '../types/trial.types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationsService {
-  
   // Success notifications
   showAddedToFavorites(trial: Trial): void {
     Swal.fire({
@@ -16,10 +15,10 @@ export class NotificationsService {
       confirmButtonText: 'Great!',
       confirmButtonColor: '#00a78e',
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
-  
+
   showMultipleAddedToFavorites(count: number): void {
     Swal.fire({
       title: 'Added to Favorites!',
@@ -28,10 +27,10 @@ export class NotificationsService {
       confirmButtonText: 'Great!',
       confirmButtonColor: '#00a78e',
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
-  
+
   showRemovedFromFavorites(trialName: string): void {
     Swal.fire({
       title: 'Removed from Favorites',
@@ -40,10 +39,10 @@ export class NotificationsService {
       confirmButtonText: 'Ok',
       confirmButtonColor: '#00a78e',
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
-  
+
   showMultipleRemovedFromFavorites(count: number): void {
     Swal.fire({
       title: 'Removed from Favorites',
@@ -52,10 +51,10 @@ export class NotificationsService {
       confirmButtonText: 'Ok',
       confirmButtonColor: '#00a78e',
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
-  
+
   // Info notifications
   showAlreadyInFavorites(trial: Trial): void {
     Swal.fire({
@@ -65,10 +64,10 @@ export class NotificationsService {
       confirmButtonText: 'Got it',
       confirmButtonColor: '#2c7fb8',
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
-  
+
   showNoNewItemsAdded(): void {
     Swal.fire({
       title: 'No New Items',
@@ -77,12 +76,12 @@ export class NotificationsService {
       confirmButtonText: 'Got it',
       confirmButtonColor: '#2c7fb8',
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
-  
+
   // Confirmation dialogs
-  confirmRemoveFromFavorites(trial: Trial): Promise<any> {
+  confirmRemoveFromFavorites(trial: Trial): Promise<SweetAlertResult> {
     return Swal.fire({
       title: 'Remove from Favorites?',
       text: `Are you sure you want to remove "${trial.name}" from your favorites?`,
@@ -91,11 +90,11 @@ export class NotificationsService {
       confirmButtonColor: '#e74c3c',
       cancelButtonColor: '#7f8c8d',
       confirmButtonText: 'Yes, remove it',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
     });
   }
-  
-  confirmRemoveMultipleFromFavorites(count: number): Promise<any> {
+
+  confirmRemoveMultipleFromFavorites(count: number): Promise<SweetAlertResult> {
     return Swal.fire({
       title: 'Remove Selected?',
       text: `Are you sure you want to remove ${count} selected trial${count > 1 ? 's' : ''} from your favorites?`,
@@ -104,7 +103,7 @@ export class NotificationsService {
       confirmButtonColor: '#e74c3c',
       cancelButtonColor: '#7f8c8d',
       confirmButtonText: 'Yes, remove them',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
     });
   }
-} 
+}

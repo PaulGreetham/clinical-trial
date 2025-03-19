@@ -1,18 +1,18 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { TrialListComponent } from './trial-list.component';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, throwError } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { NotificationsService } from '../../services/notifications.service';
-import { By } from '@angular/platform-browser';
 import { Trial } from '../../types/trial.types';
-import { of, throwError } from 'rxjs';
-import { RouterTestingModule } from '@angular/router/testing';
+import { TrialListComponent } from './trial-list.component';
 
 describe('TrialListComponent', () => {
   let component: TrialListComponent;
   let fixture: ComponentFixture<TrialListComponent>;
   let mockApiService: jasmine.SpyObj<ApiService>;
   let mockNotificationsService: jasmine.SpyObj<NotificationsService>;
-  
+
   const mockTrials: Trial[] = [
     {
       id: 'NCT00001111',
@@ -20,7 +20,7 @@ describe('TrialListComponent', () => {
       description: 'Description for test trial 1',
       phase: 'Phase 2',
       status: 'RECRUITING',
-      startDate: '2023-01-01'
+      startDate: '2023-01-01',
     },
     {
       id: 'NCT00002222',
@@ -28,23 +28,23 @@ describe('TrialListComponent', () => {
       description: 'Description for test trial 2',
       phase: 'Phase 3',
       status: 'ACTIVE_NOT_RECRUITING',
-      startDate: '2023-02-01'
-    }
+      startDate: '2023-02-01',
+    },
   ];
 
   beforeEach(async () => {
     mockApiService = jasmine.createSpyObj('ApiService', [
-      'getRandomTrials', 
-      'getRandomSingleTrial', 
-      'addToFavorites', 
-      'addMultipleToFavorites'
+      'getRandomTrials',
+      'getRandomSingleTrial',
+      'addToFavorites',
+      'addMultipleToFavorites',
     ]);
-    
+
     mockNotificationsService = jasmine.createSpyObj('NotificationsService', [
-      'showAddedToFavorites', 
-      'showMultipleAddedToFavorites'
+      'showAddedToFavorites',
+      'showMultipleAddedToFavorites',
     ]);
-    
+
     mockApiService.getRandomTrials.and.returnValue(of(mockTrials));
     mockApiService.getRandomSingleTrial.and.returnValue(of([mockTrials[0]]));
     mockApiService.addToFavorites.and.returnValue(of(undefined));
@@ -54,8 +54,8 @@ describe('TrialListComponent', () => {
       imports: [TrialListComponent, RouterTestingModule],
       providers: [
         { provide: ApiService, useValue: mockApiService },
-        { provide: NotificationsService, useValue: mockNotificationsService }
-      ]
+        { provide: NotificationsService, useValue: mockNotificationsService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TrialListComponent);
@@ -87,28 +87,28 @@ describe('TrialListComponent', () => {
 
   it('should handle error when loading trials fails', () => {
     mockApiService.getRandomTrials.and.returnValue(throwError(() => new Error('API Error')));
-    
+
     component.loadTrials();
-    
+
     expect(component.loading).toBe(false);
     expect(component.error).toContain('Failed to load trials');
   });
 
   it('should toggle timer state when toggleTimer is called', () => {
     expect(component.timerActive).toBe(false);
-    
+
     component.toggleTimer();
     expect(component.timerActive).toBe(true);
-    
+
     component.toggleTimer();
     expect(component.timerActive).toBe(false);
   });
 
   it('should fetch a new trial when startTimer is called', () => {
     spyOn(component, 'fetchNewTrial');
-    
+
     component.startTimer();
-    
+
     expect(component.timerActive).toBe(true);
     expect(component.fetchNewTrial).toHaveBeenCalled();
   });
@@ -116,51 +116,54 @@ describe('TrialListComponent', () => {
   it('should stop the timer when stopTimer is called', fakeAsync(() => {
     component.startTimer();
     expect(component.timerActive).toBe(true);
-    
+
     component.stopTimer();
-    
+
     expect(component.timerActive).toBe(false);
     expect(component.timerSubscription).toBeUndefined();
   }));
 
   it('should fetch new trial when fetchNewTrial is called', () => {
-    spyOn<any>(component, 'fetchTrialWithRetry');
-    
+    // @ts-expect-error Private method access for testing
+    spyOn(component, 'fetchTrialWithRetry');
+
     component.fetchNewTrial();
-    
-    expect(component['fetchTrialWithRetry']).toHaveBeenCalledWith(0);
+
+    // @ts-expect-error Private method access for testing
+    expect(component.fetchTrialWithRetry).toHaveBeenCalledWith(0);
   });
 
   it('should process new trial correctly', () => {
     component.trials = [...mockTrials];
-    
+
     const newTrial: Trial = {
       id: 'NCT00003333',
       name: 'New Test Trial',
       description: 'Description for new test trial',
       phase: 'Phase 1',
       status: 'RECRUITING',
-      startDate: '2023-03-01'
+      startDate: '2023-03-01',
     };
-    
-    (component as any).processNewTrial(newTrial);
-    
+
+    // @ts-expect-error Private method access for testing
+    component.processNewTrial(newTrial);
+
     expect(component.trials[0].id).toBe('NCT00003333');
     expect(component.trials[0].isNew).toBe(true);
-    
+
     expect(component.trials.length).toBe(3);
     expect(component.trials.length).toBe(3);
   });
 
   it('should toggle selection of a trial', () => {
     const trialId = mockTrials[0].id;
-    
+
     expect(component.isSelected(trialId)).toBeFalse();
-    
+
     component.toggleSelection(trialId);
     expect(component.isSelected(trialId)).toBeTrue();
     expect(component.selectedTrials.size).toBe(1);
-    
+
     component.toggleSelection(trialId);
     expect(component.isSelected(trialId)).toBeFalse();
     expect(component.selectedTrials.size).toBe(0);
@@ -168,9 +171,9 @@ describe('TrialListComponent', () => {
 
   it('should add a trial to favorites', () => {
     const trial = mockTrials[0];
-    
+
     component.addToFavorites(trial);
-    
+
     expect(mockApiService.addToFavorites).toHaveBeenCalledWith(trial);
   });
 
@@ -178,9 +181,9 @@ describe('TrialListComponent', () => {
     component.trials = [...mockTrials];
     component.toggleSelection(mockTrials[0].id);
     component.toggleSelection(mockTrials[1].id);
-    
+
     component.addSelectedToFavorites();
-    
+
     expect(mockApiService.addMultipleToFavorites).toHaveBeenCalledWith(
       jasmine.arrayContaining(mockTrials)
     );
@@ -189,17 +192,17 @@ describe('TrialListComponent', () => {
 
   it('should not add to favorites if no trials selected', () => {
     component.addSelectedToFavorites();
-    
+
     expect(mockApiService.addMultipleToFavorites).not.toHaveBeenCalled();
   });
 
   it('should render trials list when there are trials', () => {
     const trialsList = fixture.debugElement.query(By.css('.trials-list'));
     expect(trialsList).toBeTruthy();
-    
+
     const trialItems = fixture.debugElement.queryAll(By.css('.trial-item'));
     expect(trialItems.length).toBe(2);
-    
+
     const firstTrial = trialItems[0];
     const trialHeading = firstTrial.query(By.css('h3')).nativeElement;
     expect(trialHeading.textContent).toContain(mockTrials[0].name);
@@ -208,7 +211,7 @@ describe('TrialListComponent', () => {
   it('should render placeholder when there are no trials', () => {
     component.trials = [];
     fixture.detectChanges();
-    
+
     const placeholder = fixture.debugElement.query(By.css('.trials-placeholder'));
     expect(placeholder).toBeTruthy();
     expect(placeholder.nativeElement.textContent).toContain('No trials found');
@@ -217,7 +220,7 @@ describe('TrialListComponent', () => {
   it('should render navigation links', () => {
     const navLinks = fixture.debugElement.queryAll(By.css('.nav-link'));
     expect(navLinks.length).toBe(2);
-    
+
     expect(navLinks[0].attributes['routerLink']).toBe('/home');
     expect(navLinks[1].attributes['routerLink']).toBe('/favorites');
   });
@@ -229,24 +232,25 @@ describe('TrialListComponent', () => {
       description: `Description ${i}`,
       phase: 'Phase 2',
       status: 'RECRUITING',
-      startDate: '2023-01-01'
+      startDate: '2023-01-01',
     }));
-    
+
     component.trials = manyTrials;
-    
+
     const newTrial: Trial = {
       id: 'NEW_TRIAL',
       name: 'New Trial',
       description: 'New Description',
       phase: 'Phase 1',
       status: 'RECRUITING',
-      startDate: '2023-03-01'
+      startDate: '2023-03-01',
     };
-    
-    (component as any).processNewTrial(newTrial);
-    
+
+    // @ts-expect-error Private method access for testing
+    component.processNewTrial(newTrial);
+
     expect(component.trials.length).toBe(10);
-    
+
     expect(component.trials[0].id).toBe('NEW_TRIAL');
   });
 
@@ -254,9 +258,9 @@ describe('TrialListComponent', () => {
     component.startTimer();
     const sub = component.timerSubscription;
     spyOn(sub!, 'unsubscribe');
-    
+
     component.ngOnDestroy();
-    
+
     expect(sub!.unsubscribe).toHaveBeenCalled();
   });
-}); 
+});
