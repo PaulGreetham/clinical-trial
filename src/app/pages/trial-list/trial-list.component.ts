@@ -106,7 +106,7 @@ export class TrialListComponent implements OnInit, OnDestroy {
     // Bail out if we've retried too many times
     if (retryCount >= this.maxRetries) {
       console.error(`Max retry attempts (${this.maxRetries}) reached`);
-      this.error = 'Failed to fetch a unique trial after multiple attempts.';
+      this.error = 'Failed to fetch a trial after multiple attempts.';
       this.loading = false;
       return;
     }
@@ -115,13 +115,8 @@ export class TrialListComponent implements OnInit, OnDestroy {
     this.apiService.getRandomSingleTrial().subscribe({
       next: (data) => {
         if (data.length > 0) {
-          // Check if we've already seen this trial
-          if (!this.usedTrialIds.has(data[0].id)) {
-            this.processNewTrial(data[0]);
-          } else {
-            console.log(`Trial ${data[0].id} already exists, trying again...`);
-            setTimeout(() => this.fetchTrialWithRetry(retryCount + 1), 300);
-          }
+          // Process the trial regardless of whether we've seen it before
+          this.processNewTrial(data[0], true);
         } else {
           console.warn('API returned empty data');
           setTimeout(() => this.fetchTrialWithRetry(retryCount + 1), 300);
@@ -131,11 +126,8 @@ export class TrialListComponent implements OnInit, OnDestroy {
     });
   }
   
-  private processNewTrial(newTrial: Trial, allowDuplicate: boolean = false): void {
-    if (!allowDuplicate) {
-      // Add this ID to our used trials set
-      this.usedTrialIds.add(newTrial.id);
-    }
+  private processNewTrial(newTrial: Trial, allowDuplicate: boolean = true): void {
+    // No longer checking for duplicates or tracking used trial IDs
     
     console.log('New trial from API:', newTrial.id);
     
@@ -165,40 +157,22 @@ export class TrialListComponent implements OnInit, OnDestroy {
   
   private handleApiError(err: any): void {
     console.error('Error fetching trial from API:', err);
-    // If we hit an error, try with a different method rather than showing error to user
-    const fallbackSearchType = Math.floor(Math.random() * 2); // Only use methods 0 or 1
+    // Simplified fallback - just use getRandomTrials instead of conditionally using getTrialsByCondition
     
-    if (fallbackSearchType === 0) {
-      this.apiService.getTrialsByCondition(["cancer", "diabetes", "alzheimer", "covid"][Math.floor(Math.random() * 4)])
-        .subscribe({
-          next: (data) => this.processRandomTrial(data),
-          error: (errFallback) => {
-            // Now show error as both attempts failed
-            this.error = `API Error: ${err.message || 'Unknown error'}`;
-          }
-        });
-    } else {
-      this.apiService.getRandomTrials(10).subscribe({
-        next: (data) => this.processRandomTrial(data),
-        error: (errFallback) => {
-          this.error = `API Error: ${err.message || 'Unknown error'}`;
-        }
-      });
-    }
+    this.apiService.getRandomTrials(10).subscribe({
+      next: (data) => this.processRandomTrial(data),
+      error: (errFallback) => {
+        this.error = `API Error: ${err.message || 'Unknown error'}`;
+      }
+    });
   }
   
   // Helper method to process a random trial from a batch
   private processRandomTrial(data: Trial[]): void {
     if (data.length > 0) {
-      const uniqueTrials = data.filter(trial => !this.usedTrialIds.has(trial.id));
-      if (uniqueTrials.length > 0) {
-        const randomIndex = Math.floor(Math.random() * uniqueTrials.length);
-        this.processNewTrial(uniqueTrials[randomIndex]);
-      } else if (data.length > 0) {
-        // If no unique trials, just pick one from all results
-        const randomIndex = Math.floor(Math.random() * data.length);
-        this.processNewTrial(data[randomIndex], true);
-      }
+      // Just pick a random trial from the data without checking for duplicates
+      const randomIndex = Math.floor(Math.random() * data.length);
+      this.processNewTrial(data[randomIndex], true);
     }
   }
   

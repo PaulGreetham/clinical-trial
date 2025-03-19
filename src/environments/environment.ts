@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: '/api',
+  apiUrl: 'https://clinicaltrials.gov/api/v2',
   useTestData: false
 }; 
